@@ -22,7 +22,7 @@ func (d Departure) String() string {
 	if d.Status == "TRIP_CANCELLED" {
 		dir = fmt.Sprintf("--%s--", dir)
 	}
-	return fmt.Sprintf("%s\t%s\t%s", t, d.Line, dir)
+	return fmt.Sprintf("%s  %s  %s", t, d.Line, dir)
 }
 
 type KVVResponse struct {
