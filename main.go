@@ -8,6 +8,7 @@ import (
 	"image/png"
 	"image/draw"
 	"log"
+	"time"
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/gofont/goregular"
 	"golang.org/x/image/font/opentype"
@@ -21,7 +22,7 @@ func main() {
 	// Only on ARM
 	_ = fetchers.DWD()
 
-	time := fetchers.WordClock()
+	time := fetchers.WordClock(time.Now())
 
 	const width, height = 600, 800
 

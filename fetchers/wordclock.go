@@ -33,19 +33,19 @@ func wordsHour(t time.Time) string {
 
 var wochentage = []string{"Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"}
 
-func WordClock() []string {
+func WordClock(t time.Time) []string {
 	// TODO doesn't work on Kindle (no timedatectl etc)
 	// Without location, it's UTC and I would need to add 1 or two depending on summer /winter time
 	loc, err := time.LoadLocation("Europe/Berlin")
 	if err != nil {
 		fmt.Printf("Could not load location, %s", err)
 	}
-	now := time.Now().In(loc)
-	fmt.Printf("%v", now)
+	t = t.In(loc)
+	fmt.Printf("%v", t)
 	return []string{
-		fmt.Sprintf("%s%s", wordsMinutes(now.Minute()), wordsHour(now)),
-		wochentage[now.Weekday()],
+		fmt.Sprintf("%s%s", wordsMinutes(t.Minute()), wordsHour(t)),
+		wochentage[t.Weekday()],
 		// TODO translate to german
-		now.Format("2. Jan 2006"),
+		t.Format("2. Jan 2006"),
 	}
 }
