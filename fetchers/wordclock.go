@@ -9,16 +9,11 @@ import (
 )
 
 func wordsMinutes(m int) string {
-	// TODO add "kurz vor" and "kurz nach"
-	if m >= 8 && m <= 22 {
-		return "Viertel "
-	} else if m >= 23 && m <= 37 {
-		return "Halb "
-	} else if m >= 38 && m <= 52 {
-		return "Dreiviertel "
-	} else {
-		return ""
-	}
+	quarters := []string{"", "Viertel ", "Halb ", "Dreiviertel "}
+	quarter := (m+7) / 15 % 4
+	additions := []string{"", "Kurz nach ", "Kurz vor "}
+	x := (m + 2) / 5 % 3
+	return additions[x] + quarters[quarter]
 }
 
 func wordsHour(t time.Time) string {
@@ -34,8 +29,6 @@ func wordsHour(t time.Time) string {
 var wochentage = []string{"Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"}
 
 func WordClock(t time.Time) []string {
-	// TODO doesn't work on Kindle (no timedatectl etc)
-	// Without location, it's UTC and I would need to add 1 or two depending on summer /winter time
 	loc, err := time.LoadLocation("Europe/Berlin")
 	if err != nil {
 		fmt.Printf("Could not load location, %s", err)
