@@ -1,14 +1,15 @@
 package main
 
 import (
-	"git.ff02.de/display/fetchers"
+	"image"
+	"image/draw"
+	"image/png"
+	"log"
 	"os"
 	"os/exec"
-	"image"
-	"image/png"
-	"image/draw"
-	"log"
 	"time"
+
+	"git.ff02.de/display/fetchers"
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/gofont/goregular"
 	"golang.org/x/image/font/opentype"
@@ -41,13 +42,13 @@ func main() {
 
 	img := image.NewGray(image.Rect(0, 0, width, height))
 	// Draw white background
-	draw.Draw(img, image.Rect(0, 0, width, height), image.White, image.Point{0,0}, draw.Over)
+	draw.Draw(img, image.Rect(0, 0, width, height), image.White, image.Point{0, 0}, draw.Over)
 
 	marginLeft := 32
 	marginTop := 25
 	lineSpacing := 36
 	// TODO move this drawing into fetchers and only pass them where to draw?
-	currentLineStart := marginTop+lineSpacing
+	currentLineStart := marginTop + lineSpacing
 	d := font.Drawer{
 		Dst:  img,
 		Src:  image.Black,

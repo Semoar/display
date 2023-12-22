@@ -25,18 +25,18 @@ type DWDResponse struct {
 }
 type DWDFoo struct {
 	Forecast1 DWDForecast `json:"forecast1"`
-	Days []DWDDay `json:"days"`
+	Days      []DWDDay    `json:"days"`
 }
 type DWDForecast struct {
-	Start int //actually a time from epoch
-	TimeStep int
+	//Start int //actually a time from epoch
+	TimeStep           int
 	PrecipitationTotal []int
 }
 type DWDDay struct {
-	Date string `json:"dayDate"`
+	Date           string `json:"dayDate"`
 	TemperatureMin int
 	TemperatureMax int
-	Precipitation int
+	Precipitation  int
 }
 
 func DWD() []Weather {
@@ -75,10 +75,10 @@ func (k DWDResponse) toGolang() ([]Weather, error) {
 			return []Weather{}, err
 		}
 		result = append(result, Weather{
-			Date:      t,
-			TempMin:      float32(d.TemperatureMin) /10,
-			TempMax: float32(d.TemperatureMax)/10,
-			Rain:    float32(d.Precipitation)/10,
+			Date:    t,
+			TempMin: float32(d.TemperatureMin) / 10,
+			TempMax: float32(d.TemperatureMax) / 10,
+			Rain:    float32(d.Precipitation) / 10,
 		})
 	}
 	fmt.Printf("result: %v\n", result)

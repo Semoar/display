@@ -3,7 +3,7 @@ package fetchers
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strconv"
 	"time"
@@ -56,7 +56,7 @@ func KVV() []Departure {
 	}
 	defer resp.Body.Close()
 
-	byteValue, err := ioutil.ReadAll(resp.Body)
+	byteValue, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return []Departure{}
 	}

@@ -1,8 +1,8 @@
 package fetchers
 
 import (
-	"time"
 	"fmt"
+	"time"
 
 	// embed timezones as the Kindle doesn't have timezone infos
 	_ "time/tzdata"
@@ -10,7 +10,7 @@ import (
 
 func wordsMinutes(m int) string {
 	quarters := []string{"", "Viertel ", "Halb ", "Dreiviertel "}
-	quarter := (m+7) / 15 % 4
+	quarter := (m + 7) / 15 % 4
 	additions := []string{"", "Kurz nach ", "Kurz vor "}
 	x := (m + 2) / 5 % 3
 	return additions[x] + quarters[quarter]
