@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"image"
 	"image/draw"
 	"image/png"
@@ -18,11 +19,7 @@ import (
 
 func main() {
 	trains := fetchers.KVV()
-
-	// TODO could not unmarshal json: json: cannot unmarshal number 1703026800000 into Go struct field DWDForecast.10727.forecast1.Start of type int
-	// Only on ARM
-	_ = fetchers.DWD()
-
+	weather := fetchers.DWD()
 	time := fetchers.WordClock(time.Now())
 
 	const width, height = 600, 800
@@ -62,12 +59,38 @@ func main() {
 	}
 
 	marginLeft = 150
-	currentLineStart = 270
+	currentLineStart = 300
 	d.Dot = fixed.P(marginLeft, currentLineStart)
 	for _, line := range time {
 		d.DrawString(line)
 		currentLineStart += lineSpacing
 		d.Dot = fixed.P(marginLeft, currentLineStart)
+	}
+
+	// Draw weather
+	marginLeft = 100
+	currentLineStart = 500
+	d.Dot = fixed.P(marginLeft, currentLineStart)
+	// TODO draw today a bit bigger, fancier etc
+	today := weather[0]
+	d.DrawString(today.String())
+
+	// upcoming days
+	marginLeft = 80
+	currentLineStart = 650
+	for i, w := range weather[1:4] {
+		d.Dot = fixed.P(marginLeft*(2*i+1), currentLineStart)
+		d.DrawString(w.Date.Format("2.1."))
+	}
+	currentLineStart += lineSpacing
+	for i, w := range weather[1:4] {
+		d.Dot = fixed.P(marginLeft*(2*i+1), currentLineStart)
+		d.DrawString(fmt.Sprintf("%.1f° | %.1f°", w.TempMin, w.TempMax))
+	}
+	currentLineStart += lineSpacing
+	for i, w := range weather[1:4] {
+		d.Dot = fixed.P(marginLeft*(2*i+1), currentLineStart)
+		d.DrawString(fmt.Sprintf("%.1fmm", w.Rain))
 	}
 
 	// Write to PNG
