@@ -8,13 +8,16 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"strings"
 	"time"
 
-	"git.ff02.de/display/fetchers"
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/gofont/goregular"
 	"golang.org/x/image/font/opentype"
 	"golang.org/x/image/math/fixed"
+
+	"git.ff02.de/display/drawers"
+	"git.ff02.de/display/fetchers"
 )
 
 func main() {
@@ -52,20 +55,14 @@ func main() {
 		Face: face,
 		Dot:  fixed.P(marginLeft, currentLineStart),
 	}
+	q := ""
 	for _, train := range trains {
-		d.DrawString(train.String())
-		currentLineStart += lineSpacing
-		d.Dot = fixed.P(marginLeft, currentLineStart)
+		q += train.String() + "\n"
 	}
+	drawers.DrawText(img, 32, 25, q, 28)
 
-	marginLeft = 150
-	currentLineStart = 300
-	d.Dot = fixed.P(marginLeft, currentLineStart)
-	for _, line := range tim {
-		d.DrawString(line)
-		currentLineStart += lineSpacing
-		d.Dot = fixed.P(marginLeft, currentLineStart)
-	}
+	// draw wordclock
+	drawers.DrawText(img, 150, 280, strings.Join(tim, "\n"), 28)
 
 	// Draw weather
 	marginLeft = 80
@@ -110,22 +107,17 @@ func main() {
 	d.DrawString(fmt.Sprintf("+%d h", len(values)))
 
 	// upcoming days
-	// TODO print in smaller font
-	marginLeft = 80
-	currentLineStart = 650
 	for i, w := range weather[1:4] {
-		d.Dot = fixed.P(marginLeft*(2*i+1), currentLineStart)
-		d.DrawString(w.Date.Format("2.1."))
-	}
-	currentLineStart += lineSpacing
-	for i, w := range weather[1:4] {
-		d.Dot = fixed.P(marginLeft*(2*i+1), currentLineStart)
-		d.DrawString(fmt.Sprintf("%.1f° | %.1f°", w.TempMin, w.TempMax))
-	}
-	currentLineStart += lineSpacing
-	for i, w := range weather[1:4] {
-		d.Dot = fixed.P(marginLeft*(2*i+1), currentLineStart)
-		d.DrawString(fmt.Sprintf("%.1fmm", w.Rain))
+		drawers.DrawText(img,
+			80*(2*i+1),
+			650,
+			fmt.Sprintf("%s\n%.1f° | %.1f°\n%.1fmm",
+				w.Date.Format("2.1."),
+				w.TempMin,
+				w.TempMax,
+				w.Rain,
+			),
+			24)
 	}
 
 	// Write to PNG
