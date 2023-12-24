@@ -20,7 +20,7 @@ import (
 func main() {
 	trains := fetchers.KVV()
 	weather := fetchers.DWD()
-	time := fetchers.WordClock(time.Now())
+	tim := fetchers.WordClock(time.Now())
 
 	const width, height = 600, 800
 
@@ -61,21 +61,56 @@ func main() {
 	marginLeft = 150
 	currentLineStart = 300
 	d.Dot = fixed.P(marginLeft, currentLineStart)
-	for _, line := range time {
+	for _, line := range tim {
 		d.DrawString(line)
 		currentLineStart += lineSpacing
 		d.Dot = fixed.P(marginLeft, currentLineStart)
 	}
 
 	// Draw weather
-	marginLeft = 100
-	currentLineStart = 500
+	marginLeft = 80
+	currentLineStart = 480
 	d.Dot = fixed.P(marginLeft, currentLineStart)
 	// TODO draw today a bit bigger, fancier etc
 	today := weather[0]
-	d.DrawString(today.String())
+	d.DrawString(fmt.Sprintf("%.1f°", today.TempMax))
+	currentLineStart += 2 * lineSpacing
+	d.Dot = fixed.P(marginLeft, currentLineStart)
+	d.DrawString(fmt.Sprintf("%.1f°", today.TempMin))
+	// Draw rain (diagram) - bar chart
+	fmt.Printf("Rain today: %v", today.RainHourly)
+	nowHour := time.Now().UTC().Hour() // TODO check whether DWD starts at UTC 0 or german 0
+	values := today.RainHourly[nowHour:]
+	marginLeft = 280
+	currentLineStart = 480
+	w := 120
+	barWidth := w / len(values)
+	he := 50
+	maxValue := float32(0.0)
+	for _, v := range values {
+		if v > maxValue {
+			maxValue = v
+		}
+	}
+	heightFactor := he / (int(maxValue) + 1)
+	for i, h := range values {
+		draw.Draw(img, image.Rect(
+			marginLeft+i*barWidth,
+			currentLineStart+he-int(h*float32(heightFactor)),
+			marginLeft+(i+1)*barWidth-2,
+			currentLineStart+he), image.Black, image.Point{0, 0}, draw.Over)
+	}
+	// print legend/axis/units
+	// TODO right align
+	d.Dot = fixed.P(marginLeft-20, currentLineStart)
+	d.DrawString(fmt.Sprintf("%d", int(maxValue)+1))
+	d.Dot = fixed.P(marginLeft-20, currentLineStart+he)
+	d.DrawString("0")
+	d.Dot = fixed.P(marginLeft+w, currentLineStart+he+lineSpacing)
+	d.DrawString(fmt.Sprintf("+%d h", len(values)))
 
 	// upcoming days
+	// TODO print in smaller font
 	marginLeft = 80
 	currentLineStart = 650
 	for i, w := range weather[1:4] {
@@ -108,6 +143,7 @@ func main() {
 		log.Fatalf("Could not close file %s, %s", fileName, err)
 	}
 
+	// TODO only clear on every nth refresh to be less flashy
 	clearCmd := exec.Command("eips", "-c")
 	clearCmd.Run()
 	drawCmd := exec.Command("eips", "-g", "example.png")

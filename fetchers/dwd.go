@@ -3,16 +3,17 @@ package fetchers
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"time"
 )
 
 type Weather struct {
-	Date    time.Time
-	TempMin float32
-	TempMax float32
-	Rain    float32
+	Date       time.Time
+	TempMin    float32
+	TempMax    float32
+	Rain       float32
+	RainHourly []float32
 }
 
 func (w Weather) String() string {
@@ -50,7 +51,7 @@ func DWD() []Weather {
 	}
 	defer resp.Body.Close()
 
-	byteValue, err := ioutil.ReadAll(resp.Body)
+	byteValue, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return []Weather{}
 	}
@@ -75,11 +76,23 @@ func (k DWDResponse) toGolang() ([]Weather, error) {
 			return []Weather{}, err
 		}
 		result = append(result, Weather{
-			Date:    t,
-			TempMin: float32(d.TemperatureMin) / 10,
-			TempMax: float32(d.TemperatureMax) / 10,
-			Rain:    float32(d.Precipitation) / 10,
+			Date:       t,
+			TempMin:    float32(d.TemperatureMin) / 10,
+			TempMax:    float32(d.TemperatureMax) / 10,
+			Rain:       float32(d.Precipitation) / 10,
+			RainHourly: make([]float32, 24),
 		})
+	}
+	// TODO parse time, align ... For now assume that it always starts at 0:00 of the first day
+	for i, r := range k.Foo.Forecast1.PrecipitationTotal {
+		// TODO validate time step to be 3600?
+		day := i / 24
+		hour := i % 24
+		// 32767 is used for values in the past; ignore those
+		if r == 32767 {
+			continue
+		}
+		result[day].RainHourly[hour] = float32(r) / 10
 	}
 	fmt.Printf("result: %v\n", result)
 	return result, nil
