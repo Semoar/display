@@ -11,11 +11,6 @@ import (
 	"strings"
 	"time"
 
-	"golang.org/x/image/font"
-	"golang.org/x/image/font/gofont/goregular"
-	"golang.org/x/image/font/opentype"
-	"golang.org/x/image/math/fixed"
-
 	"git.ff02.de/display/drawers"
 	"git.ff02.de/display/fetchers"
 )
@@ -27,85 +22,28 @@ func main() {
 
 	const width, height = 600, 800
 
-	f, err := opentype.Parse(goregular.TTF)
-	if err != nil {
-		log.Fatalf("Could not parse TTF, %s", err)
-	}
-	face, err := opentype.NewFace(f, &opentype.FaceOptions{
-		Size:    28,
-		DPI:     72,
-		Hinting: font.HintingNone,
-	})
-	if err != nil {
-		log.Fatalf("Could not initialize font face, %s", err)
-	}
-
 	img := image.NewGray(image.Rect(0, 0, width, height))
 	// Draw white background
 	draw.Draw(img, image.Rect(0, 0, width, height), image.White, image.Point{0, 0}, draw.Over)
 
-	marginLeft := 32
-	marginTop := 25
-	lineSpacing := 36
-	// TODO move this drawing into fetchers and only pass them where to draw?
-	currentLineStart := marginTop + lineSpacing
-	d := font.Drawer{
-		Dst:  img,
-		Src:  image.Black,
-		Face: face,
-		Dot:  fixed.P(marginLeft, currentLineStart),
-	}
+	// draw train departures
 	q := ""
 	for _, train := range trains {
 		q += train.String() + "\n"
 	}
-	drawers.DrawText(img, 32, 25, q, 28)
+	drawers.DrawText(img, 50, 35, q, 24)
 
 	// draw wordclock
-	drawers.DrawText(img, 150, 280, strings.Join(tim, "\n"), 28)
+	drawers.DrawText(img, 150, 260, strings.Join(tim, "\n"), 32)
 
 	// Draw weather
-	marginLeft = 80
-	currentLineStart = 480
-	d.Dot = fixed.P(marginLeft, currentLineStart)
-	// TODO draw today a bit bigger, fancier etc
 	today := weather[0]
-	d.DrawString(fmt.Sprintf("%.1f°", today.TempMax))
-	currentLineStart += 2 * lineSpacing
-	d.Dot = fixed.P(marginLeft, currentLineStart)
-	d.DrawString(fmt.Sprintf("%.1f°", today.TempMin))
+	drawers.DrawText(img, 80, 480, fmt.Sprintf("%.1f°", today.TempMax), 28)
+	drawers.DrawText(img, 80, 560, fmt.Sprintf("%.1f°", today.TempMin), 28)
 	// Draw rain (diagram) - bar chart
-	fmt.Printf("Rain today: %v", today.RainHourly)
 	nowHour := time.Now().UTC().Hour() // TODO check whether DWD starts at UTC 0 or german 0
 	values := today.RainHourly[nowHour:]
-	marginLeft = 280
-	currentLineStart = 480
-	w := 120
-	barWidth := w / len(values)
-	he := 50
-	maxValue := float32(0.0)
-	for _, v := range values {
-		if v > maxValue {
-			maxValue = v
-		}
-	}
-	heightFactor := he / (int(maxValue) + 1)
-	for i, h := range values {
-		draw.Draw(img, image.Rect(
-			marginLeft+i*barWidth,
-			currentLineStart+he-int(h*float32(heightFactor)),
-			marginLeft+(i+1)*barWidth-2,
-			currentLineStart+he), image.Black, image.Point{0, 0}, draw.Over)
-	}
-	// print legend/axis/units
-	// TODO right align
-	d.Dot = fixed.P(marginLeft-20, currentLineStart)
-	d.DrawString(fmt.Sprintf("%d", int(maxValue)+1))
-	d.Dot = fixed.P(marginLeft-20, currentLineStart+he)
-	d.DrawString("0")
-	d.Dot = fixed.P(marginLeft+w, currentLineStart+he+lineSpacing)
-	d.DrawString(fmt.Sprintf("+%d h", len(values)))
-
+	drawers.DrawBarChart(img, 280, 480, 200, 100, values, fmt.Sprintf("+%d h", len(values)))
 	// upcoming days
 	for i, w := range weather[1:4] {
 		drawers.DrawText(img,
