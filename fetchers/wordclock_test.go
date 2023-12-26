@@ -15,27 +15,27 @@ func TestWordclock(t *testing.T) {
 		{
 			name:   "Add 1 hour in winter",
 			input:  time.Date(2009, time.November, 10, 9, 0, 0, 0, time.UTC),
-			result: []string{"Zehn", "Dienstag", "10. Nov 2009"},
+			result: []string{"zehn", "Dienstag", "10. Nov 2009"},
 		},
 		{
 			name:   "Add 2 hours in summer",
 			input:  time.Date(2009, time.July, 10, 9, 0, 0, 0, time.UTC),
-			result: []string{"Elf", "Freitag", "10. Jul 2009"},
+			result: []string{"elf", "Freitag", "10. Jul 2009"},
 		},
 		{
 			name:   "Add another hour if we are at 'Viertel' or later",
 			input:  time.Date(2009, time.July, 10, 9, 15, 0, 0, time.UTC),
-			result: []string{"Viertel Zwölf", "Freitag", "10. Jul 2009"},
+			result: []string{"viertel zwölf", "Freitag", "10. Jul 2009"},
 		},
 		{
 			name:   "Use 'kurz nach'",
 			input:  time.Date(2009, time.July, 10, 9, 7, 0, 0, time.UTC),
-			result: []string{"Kurz nach Elf", "Freitag", "10. Jul 2009"},
+			result: []string{"kurz nach elf", "Freitag", "10. Jul 2009"},
 		},
 		{
 			name:   "Use 'kurz vor'",
 			input:  time.Date(2009, time.July, 10, 9, 8, 0, 0, time.UTC),
-			result: []string{"Kurz vor Viertel Zwölf", "Freitag", "10. Jul 2009"},
+			result: []string{"kurz vor viertel zwölf", "Freitag", "10. Jul 2009"},
 		},
 	}
 

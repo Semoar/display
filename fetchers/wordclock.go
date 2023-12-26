@@ -9,9 +9,9 @@ import (
 )
 
 func wordsMinutes(m int) string {
-	quarters := []string{"", "Viertel ", "Halb ", "Dreiviertel "}
+	quarters := []string{"", "viertel ", "halb ", "dreiviertel "}
 	quarter := (m + 7) / 15 % 4
-	additions := []string{"", "Kurz nach ", "Kurz vor "}
+	additions := []string{"", "kurz nach ", "kurz vor "}
 	x := (m + 2) / 5 % 3
 	return additions[x] + quarters[quarter]
 }
@@ -22,7 +22,7 @@ func wordsHour(t time.Time) string {
 		h += 1
 	}
 	h = h % 12
-	names := []string{"Zwölf", "Eins", "Zwei", "Drei", "Vier", "Fünf", "Sechs", "Sieben", "Acht", "Neun", "Zehn", "Elf"}
+	names := []string{"zwölf", "eins", "zwei", "drei", "vier", "fünf", "sechs", "sieben", "acht", "neun", "zehn", "elf"}
 	return names[h]
 }
 
