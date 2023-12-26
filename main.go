@@ -40,6 +40,7 @@ func main() {
 	today := weather[0]
 	drawers.DrawText(img, 80, 480, fmt.Sprintf("%.1f°", today.TempMax), 28)
 	drawers.DrawText(img, 80, 560, fmt.Sprintf("%.1f°", today.TempMin), 28)
+	drawers.DrawImage(img, 150, 490, "./thermometer.png")
 	// Draw rain (diagram) - bar chart
 	nowHour := time.Now().UTC().Hour() // TODO check whether DWD starts at UTC 0 or german 0
 	values := today.RainHourly[nowHour:]
@@ -57,6 +58,7 @@ func main() {
 			),
 			24)
 	}
+	// TODO show icons (temperature scale, rain icon, penguin visualizing general weather)
 
 	// Write to PNG
 	fileName := "example.png"

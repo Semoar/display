@@ -6,6 +6,7 @@ import (
 	"image/draw"
 	"log"
 	"math"
+	"os"
 	"strings"
 
 	"golang.org/x/image/font"
@@ -77,4 +78,21 @@ func DrawBarChart(img draw.Image, x, y, w, h int, values []float32, xLabel strin
 	DrawText(img, x-20, y, fmt.Sprintf("%d", maxCeiled), 16)
 	DrawText(img, x-20, y+h, fmt.Sprintf("0"), 16)
 	DrawText(img, x+w, y+h, xLabel, 16)
+}
+
+// DrawImage read image from srcPath and draws it at (x,y).
+// Currently does not support any scaling.
+func DrawImage(img draw.Image, x, y int, srcPath string) {
+	f, err := os.Open(srcPath)
+	if err != nil {
+		log.Default().Printf("could not open %s, not drawing anything", srcPath)
+		return
+	}
+	defer f.Close()
+	src, _, err := image.Decode(f)
+	if err != nil {
+		log.Default().Printf("could not decode %s, not drawing anything", srcPath)
+		return
+	}
+	draw.Draw(img, image.Rect(x, y, x+src.Bounds().Dx(), y+src.Bounds().Dy()), src, image.Point{0, 0}, draw.Over)
 }
