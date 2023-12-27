@@ -52,6 +52,12 @@ func DrawText(img draw.Image, x int, y int, text string, fontsize int) {
 	// TODO maybe return lower right corner to help layouting other elements
 }
 
+// DrawLine draws a line of width w between (x1,y1) and (x2,y2).
+// Important: for now only supports horizontal or vertical lines.
+func DrawLine(img draw.Image, x1, y1, x2, y2 int, w int) {
+	draw.Draw(img, image.Rect(x1, y1, x2+w, y2+w), image.Black, image.Point{0, 0}, draw.Over)
+}
+
 // DrawBarChart draws a bar chart approximately at (x,y) in the upper lest corner
 // and with width w and height h. Automatically adds 0 and max value to y-axis.
 // The xLabel is printed in the bottom right corner.
