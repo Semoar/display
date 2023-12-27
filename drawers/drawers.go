@@ -32,6 +32,8 @@ func getFace(size int) font.Face {
 }
 
 // DrawText renders multiline text into the image. Upper left corner is approximately at (x,y).
+// Supports some rudimentary markdown syntax:
+// * '~~' to strike through text
 func DrawText(img draw.Image, x int, y int, text string, fontsize int) {
 	// TODO add option for horizontal alignment
 	face := getFace(fontsize)
@@ -44,10 +46,29 @@ func DrawText(img draw.Image, x int, y int, text string, fontsize int) {
 		Dot:  fixed.P(x, currentLineStart),
 	}
 	lines := strings.Split(text, "\n")
+	strike := false
+	strikeX := 0
+	strikeY := 0
 	for _, line := range lines {
-		d.DrawString(line)
+		lineParts := strings.Split(line, "~~")
+		for _, linePart := range lineParts {
+			d.DrawString(linePart)
+			if strike {
+				// draw line
+				o := int(float32(fontsize) * 0.4)
+				DrawLine(img, strikeX, strikeY-o, d.Dot.X.Round(), d.Dot.Y.Round()-o, 2)
+				strike = false
+			} else {
+				// start strike = save current position as start of line
+				strikeX = d.Dot.X.Round()
+				strikeY = d.Dot.Y.Round()
+				strike = true
+			}
+		}
+		// line break
 		currentLineStart += lineSpacing
 		d.Dot = fixed.P(x, currentLineStart)
+		strike = false
 	}
 	// TODO maybe return lower right corner to help layouting other elements
 }

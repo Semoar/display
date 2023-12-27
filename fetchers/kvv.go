@@ -17,12 +17,13 @@ type Departure struct {
 }
 
 func (d Departure) String() string {
+	// TODO use 'in x min' for x <= 9
 	t := d.Time.Format("15:04")
-	dir := d.Direction
+	fmtString := "%s  %s  %s"
 	if d.Status == "TRIP_CANCELLED" {
-		dir = fmt.Sprintf("--%s--", dir)
+		fmtString = "~~%s  %s  %s~~"
 	}
-	return fmt.Sprintf("%s  %s  %s", t, d.Line, dir)
+	return fmt.Sprintf(fmtString, t, d.Line, d.Direction)
 }
 
 type KVVResponse struct {
