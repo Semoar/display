@@ -9,11 +9,14 @@ import (
 )
 
 type Weather struct {
-	Date       time.Time
-	TempMin    float32
-	TempMax    float32
-	Rain       float32
-	RainHourly []float32
+	Date          time.Time
+	TempMin       float32
+	TempMax       float32
+	Rain          float32
+	RainHourly    []float32
+	WindSpeed     float32
+	WindDirection float32
+	Sunshine      float32
 }
 
 func (w Weather) String() string {
@@ -38,6 +41,9 @@ type DWDDay struct {
 	TemperatureMin int
 	TemperatureMax int
 	Precipitation  int
+	WindSpeed      int
+	WindDirection  int
+	Sunshine       int
 }
 
 func DWD() []Weather {
@@ -76,11 +82,14 @@ func (k DWDResponse) toGolang() ([]Weather, error) {
 			return []Weather{}, err
 		}
 		result = append(result, Weather{
-			Date:       t,
-			TempMin:    float32(d.TemperatureMin) / 10,
-			TempMax:    float32(d.TemperatureMax) / 10,
-			Rain:       float32(d.Precipitation) / 10,
-			RainHourly: make([]float32, 24),
+			Date:          t,
+			TempMin:       float32(d.TemperatureMin) / 10,
+			TempMax:       float32(d.TemperatureMax) / 10,
+			Rain:          float32(d.Precipitation) / 10,
+			RainHourly:    make([]float32, 24),
+			WindSpeed:     float32(d.WindSpeed) / 10,
+			WindDirection: float32(d.WindDirection) / 10,
+			Sunshine:      float32(d.Sunshine) / 600, // I guess its tenth minutes
 		})
 	}
 	// TODO parse time, align ... For now assume that it always starts at 0:00 of the first day
