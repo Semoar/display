@@ -6,6 +6,7 @@ import (
 	"image/draw"
 	"image/png"
 	"log"
+	"math"
 	"os"
 	"os/exec"
 	"strings"
@@ -38,22 +39,22 @@ func main() {
 
 	// Draw weather
 	today := weather[0]
-	drawers.DrawText(img, 80, 480, fmt.Sprintf("%.1f°", today.TempMax), 28)
-	drawers.DrawText(img, 80, 560, fmt.Sprintf("%.1f°", today.TempMin), 28)
-	drawers.DrawImage(img, 150, 490, "./assets/thermometer.png")
+	drawers.DrawText(img, 80, 480, fmt.Sprintf("%d°", round(today.TempMax)), 28)
+	drawers.DrawText(img, 80, 560, fmt.Sprintf("%d°", round(today.TempMin)), 28)
+	drawers.DrawImage(img, 130, 490, "./assets/thermometer.png")
 	// Draw rain (diagram) - bar chart
 	nowHour := time.Now().UTC().Hour() // TODO check whether DWD starts at UTC 0 or german 0
 	values := today.RainHourly[nowHour:]
-	drawers.DrawBarChart(img, 230, 480, 120, 100, values, fmt.Sprintf("+%d h", len(values)))
+	drawers.DrawBarChart(img, 210, 480, 120, 100, values, fmt.Sprintf("+%d h", len(values)))
 	// upcoming days
 	for i, w := range weather[1:4] {
 		drawers.DrawText(img,
 			80*(2*i+1),
 			650,
-			fmt.Sprintf("%s\n%.1f° | %.1f°\n%.1fmm",
+			fmt.Sprintf("%s\n%d° | %d°\n%.1fmm",
 				w.Date.Format("2.1."),
-				w.TempMin,
-				w.TempMax,
+				round(w.TempMin),
+				round(w.TempMax),
 				w.Rain,
 			),
 			24)
@@ -99,4 +100,8 @@ func main() {
 	clearCmd.Run()
 	drawCmd := exec.Command("eips", "-g", "example.png")
 	drawCmd.Run()
+}
+
+func round(f float32) int {
+	return int(math.Round(float64(f)))
 }

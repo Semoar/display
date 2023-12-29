@@ -84,7 +84,7 @@ func DrawLine(img draw.Image, x1, y1, x2, y2 int, w int) {
 // The xLabel is printed in the bottom right corner.
 func DrawBarChart(img draw.Image, x, y, w, h int, values []float32, xLabel string) {
 	barWidth := w / len(values)
-	maxValue := float32(0.0)
+	maxValue := float32(1.0)
 	for _, v := range values {
 		if v > maxValue {
 			maxValue = v
@@ -105,6 +105,8 @@ func DrawBarChart(img draw.Image, x, y, w, h int, values []float32, xLabel strin
 	DrawText(img, x-20, y, fmt.Sprintf("%d", maxCeiled), 16)
 	DrawText(img, x-20, y+h, fmt.Sprintf("0"), 16)
 	DrawText(img, x+w, y+h, xLabel, 16)
+	DrawLine(img, x-2, y, x-2, y+h+2, 1)
+	DrawLine(img, x-2, y+h+2, x+w, y+h+2, 1)
 }
 
 // DrawImage read image from srcPath and draws it at (x,y).
