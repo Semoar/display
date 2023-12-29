@@ -17,8 +17,10 @@ type Departure struct {
 }
 
 func (d Departure) String() string {
-	// TODO use 'in x min' for x <= 9
 	t := d.Time.Format("15:04")
+	if delta := int(d.Time.Sub(time.Now()) / time.Minute); delta < 10 {
+		t = fmt.Sprintf("%d min", delta)
+	}
 	fmtString := "%s  %s  %s"
 	if d.Status == "TRIP_CANCELLED" {
 		fmtString = "~~%s  %s  %s~~"
