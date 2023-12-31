@@ -41,7 +41,7 @@ func main() {
 	today := weather[0]
 	drawers.DrawText(img, 80, 480, fmt.Sprintf("%d°", round(today.TempMax)), 28)
 	drawers.DrawText(img, 80, 560, fmt.Sprintf("%d°", round(today.TempMin)), 28)
-	drawers.DrawImage(img, 130, 490, "./assets/thermometer.png")
+	drawers.DrawImage(img, 130, 490, "assets/thermometer.png")
 	// Draw rain (diagram) - bar chart
 	nowHour := time.Now().UTC().Hour() // TODO check whether DWD starts at UTC 0 or german 0
 	values := today.RainHourly[nowHour:]
@@ -60,21 +60,21 @@ func main() {
 			24)
 	}
 	// visualizing general weather using penguin
-	drawers.DrawImage(img, width-256, 370, "./assets/penguins/penguin.png")
+	drawers.DrawImage(img, width-256, 370, "assets/penguins/penguin.png")
 	if (today.TempMin < 0 || today.TempMax < 5) && today.Rain > 1 {
-		drawers.DrawImage(img, width-256, 370, "./assets/penguins/snow.png")
+		drawers.DrawImage(img, width-256, 370, "assets/penguins/snow.png")
 	}
 	if today.WindSpeed > 10 {
-		drawers.DrawImage(img, width-256, 370, "./assets/penguins/scarf.png")
+		drawers.DrawImage(img, width-256, 370, "assets/penguins/scarf.png")
 	}
 	if today.TempMin < 5 || today.TempMax < 10 {
-		drawers.DrawImage(img, width-256, 370, "./assets/penguins/hat.png")
+		drawers.DrawImage(img, width-256, 370, "assets/penguins/hat.png")
 	}
 	if today.Sunshine > 2 {
-		drawers.DrawImage(img, width-256, 370, "./assets/penguins/sunglasses.png")
+		drawers.DrawImage(img, width-256, 370, "assets/penguins/sunglasses.png")
 	}
 	if today.Rain > 1 {
-		drawers.DrawImage(img, width-256, 370, "./assets/penguins/umbrella.png")
+		drawers.DrawImage(img, width-256, 370, "assets/penguins/umbrella.png")
 	}
 	// TODO add wind (direction and speed). That is only available per-day via the API
 	// TODO add sun shine /rise /set

@@ -1,12 +1,13 @@
 package drawers
 
 import (
+	"bytes"
+	"embed"
 	"fmt"
 	"image"
 	"image/draw"
 	"log"
 	"math"
-	"os"
 	"strings"
 
 	"golang.org/x/image/font"
@@ -14,6 +15,9 @@ import (
 	"golang.org/x/image/font/opentype"
 	"golang.org/x/image/math/fixed"
 )
+
+//go:embed assets/*
+var f embed.FS
 
 func getFace(size int) font.Face {
 	f, err := opentype.Parse(goregular.TTF)
@@ -112,13 +116,12 @@ func DrawBarChart(img draw.Image, x, y, w, h int, values []float32, xLabel strin
 // DrawImage read image from srcPath and draws it at (x,y).
 // Currently does not support any scaling.
 func DrawImage(img draw.Image, x, y int, srcPath string) {
-	f, err := os.Open(srcPath)
+	data, err := f.ReadFile(srcPath)
 	if err != nil {
 		log.Default().Printf("could not open %s, not drawing anything", srcPath)
 		return
 	}
-	defer f.Close()
-	src, _, err := image.Decode(f)
+	src, _, err := image.Decode(bytes.NewReader(data))
 	if err != nil {
 		log.Default().Printf("could not decode %s, not drawing anything", srcPath)
 		return
