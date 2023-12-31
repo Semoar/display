@@ -95,9 +95,11 @@ func main() {
 		log.Fatalf("Could not close file %s, %s", fileName, err)
 	}
 
-	// TODO only clear on every nth refresh to be less flashy
-	clearCmd := exec.Command("eips", "-c")
-	clearCmd.Run()
+	// Only clear on every 5th refresh to be less flashy
+	if time.Now().Minute()%5 == 0 {
+		clearCmd := exec.Command("eips", "-c")
+		clearCmd.Run()
+	}
 	drawCmd := exec.Command("eips", "-g", "example.png")
 	drawCmd.Run()
 }
