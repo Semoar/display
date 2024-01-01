@@ -18,7 +18,14 @@ type Departure struct {
 
 func (d Departure) String() string {
 	t := d.Time.Format("15:04")
-	if delta := int(d.Time.Sub(time.Now()) / time.Minute); delta < 10 {
+	// TODO deduplicate loading and setting timezone
+	loc, err := time.LoadLocation("Europe/Berlin")
+	if err != nil {
+		fmt.Printf("Could not load location, %s", err)
+	}
+	now := time.Now().In(loc)
+	delta := int(d.Time.Sub(now.In(loc)) / time.Minute)
+	if delta < 10 {
 		t = fmt.Sprintf("%d min", delta)
 	}
 	fmtString := "%s  %s  %s"
@@ -91,11 +98,17 @@ func (k KVVResponse) toGolang() ([]Departure, error) {
 			Status:    d.RealtimeStatus,
 		})
 	}
+	// TODO replace printing with (debug) logging
 	fmt.Printf("result: %v\n", result)
 	return result, nil
 }
 
 func (k KVVDateTime) toGolang() (time.Time, error) {
+	loc, err := time.LoadLocation("Europe/Berlin")
+	if err != nil {
+		fmt.Printf("Could not load location, %s", err)
+		return time.Time{}, err
+	}
 	year, err := strconv.Atoi(k.Year)
 	if err != nil {
 		return time.Time{}, err
@@ -116,5 +129,5 @@ func (k KVVDateTime) toGolang() (time.Time, error) {
 	if err != nil {
 		return time.Time{}, err
 	}
-	return time.Date(year, time.Month(month), day, hour, minute, 0, 0, time.Local), nil
+	return time.Date(year, time.Month(month), day, hour, minute, 0, 0, loc), nil
 }
